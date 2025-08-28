@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicant Login - SkillMatch AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#64748b'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex flex-col">
+    <!-- Header with Dark Mode Toggle -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="nav-content">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="index.html" class="logo">SkillMatch AI</a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <!-- Dark Mode Toggle Switch -->
+                    <div class="theme-toggle-container">
+                        <input type="checkbox" id="theme-toggle" class="theme-toggle-input">
+                        <label for="theme-toggle" class="theme-toggle-label">
+                            <span class="theme-toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="flex-1 flex items-center justify-center">
+    <div class="form-container">
+        <div class="text-center mb-6">
+            <h2 class="text-2xl font-extrabold text-gray-900">Applicant Portal</h2>
+            <p class="mt-2 text-sm text-gray-600">Sign in to find your perfect job match</p>
+        </div>
+        
+        <div class="card">
+            <form class="space-y-4" id="applicantLoginForm">
+                <div class="form-group">
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <div class="mt-1 relative">
+                        <input type="text" id="username" name="username" required
+                               class="block w-full px-3 py-1.5 pl-10 pr-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <div class="mt-1 relative">
+                        <input type="password" id="password" name="password" required
+                               class="block w-full px-3 py-1.5 pl-10 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center" onclick="togglePassword()">
+                            <i class="fas fa-eye text-gray-400" id="password-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="remember" name="remember"
+                               class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                        <label for="remember" class="ml-2 block text-sm text-gray-700">Remember me</label>
+                    </div>
+                    <div class="text-sm">
+                        <a href="#" class="font-medium text-primary hover:underline">Forgot password?</a>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn-primary w-full">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Sign in to Dashboard
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 text-center text-sm text-gray-600 space-y-2">
+                <p>New to SkillMatch AI? <a href="signup.html?role=applicant" class="text-primary hover:underline">Create Applicant Account</a></p>
+                <p>Not an Applicant? <a href="login-hr.html" class="text-primary hover:underline">Login as HR</a></p>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        function togglePassword() {
+            const field = document.getElementById('password');
+            const eye = document.getElementById('password-eye');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                eye.classList.remove('fa-eye');
+                eye.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                eye.classList.remove('fa-eye-slash');
+                eye.classList.add('fa-eye');
+            }
+        }
+
+        document.getElementById('applicantLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const username = formData.get('username');
+            const password = formData.get('password');
+            
+            // Here you would normally authenticate with your backend
+            console.log('Applicant login:', { username, password });
+            
+            // Store user information for the session
+            const userData = {
+                username: username,
+                name: username.includes('@') ? username.split('@')[0] : username, // Extract name from email or use username
+                role: 'applicant',
+                email: username.includes('@') ? username : username + '@email.com'
+            };
+            
+            // Format the name properly (convert john.doe to John Doe)
+            if (userData.name.includes('.')) {
+                userData.name = userData.name
+                    .split('.')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+            } else {
+                userData.name = userData.name.charAt(0).toUpperCase() + userData.name.slice(1);
+            }
+            
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            localStorage.setItem('userRole', 'applicant');
+            
+            // For demo purposes, redirect to applicant dashboard
+            window.location.href = 'dashboard-applicant.html';
+        });
+    </script>
+</body>
+</html>

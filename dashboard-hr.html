@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Dashboard - SkillMatch AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#64748b'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b fixed top-0 left-0 right-0 z-50">
+        <nav class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-primary">SkillMatch AI</h1>
+                    <span class="ml-3 px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">HR Portal</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Dark Mode Toggle Switch -->
+                    <div class="theme-toggle-container">
+                        <input type="checkbox" id="theme-toggle" class="theme-toggle-input">
+                        <label for="theme-toggle" class="theme-toggle-label">
+                            <span class="theme-toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="text-sm text-gray-700">Welcome, <span id="user-name" class="font-medium">HR User</span></div>
+                    <button onclick="logout()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Sidebar and Main Content Layout -->
+    <div class="flex pt-16 min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-sm border-r border-gray-200 fixed left-0 top-16 bottom-0 overflow-y-auto z-40">
+            <nav class="mt-5 px-2">
+                <div class="space-y-1">
+                    <a href="#" onclick="showSection('dashboard')" id="nav-dashboard" 
+                       class="nav-item bg-gray-100 text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-tachometer-alt text-gray-500 mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" onclick="showSection('applicants')" id="nav-applicants"
+                       class="nav-item text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-users text-gray-400 group-hover:text-gray-500 mr-3"></i>
+                        Applicants
+                    </a>
+                    <a href="#" onclick="showSection('job-posting')" id="nav-job-posting"
+                       class="nav-item text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-briefcase text-gray-400 group-hover:text-gray-500 mr-3"></i>
+                        Job Posting
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 ml-64 p-8 overflow-y-auto bg-gray-50">
+            
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section">
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-green-100 rounded-full">
+                                <i class="fas fa-users text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Applicants</p>
+                                <p class="text-2xl font-bold text-gray-900">247</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-blue-100 rounded-full">
+                                <i class="fas fa-briefcase text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Open Positions</p>
+                                <p class="text-2xl font-bold text-gray-900">8</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+                    <div class="flex space-x-4">
+                        <button class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-briefcase mr-2"></i>Manage Jobs
+                        </button>
+                        <button class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-users mr-2"></i>View All Applicants
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Applicants -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900">Recent Applicants</h2>
+                            <p class="text-sm text-gray-600">A quick look at the newest candidates.</p>
+                        </div>
+                        <button class="text-primary hover:text-blue-700 font-medium">
+                            View All
+                        </button>
+                    </div>
+                    
+                    <!-- Applicants Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Name
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Email
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Match Score
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Best Fit Job
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                                JS
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">John Smith</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">john.smith@email.com</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            92%
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Under Review
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Senior Frontend Developer
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                                EJ
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Emily Johnson</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">emily.j@email.com</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            89%
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            Shortlisted
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Full Stack Engineer
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                                MC
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Michael Chen</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">michael.chen@email.com</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            84%
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                            New
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Data Scientist
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                                SD
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Sarah Davis</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">sarah.davis@email.com</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            91%
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Under Review
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        UX Designer
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                                RW
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Robert Wilson</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">robert.w@email.com</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            78%
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                            New
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Backend Developer
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- End Dashboard Section -->
+
+            <!-- Applicants Section -->
+            <div id="applicants-section" class="content-section hidden">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Applicant Management</h1>
+                
+                <!-- Applicant Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-blue-100 rounded-full">
+                                <i class="fas fa-users text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Applicants</p>
+                                <p class="text-2xl font-bold text-gray-900">247</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-green-100 rounded-full">
+                                <i class="fas fa-user-check text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Shortlisted</p>
+                                <p class="text-2xl font-bold text-gray-900">68</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-yellow-100 rounded-full">
+                                <i class="fas fa-clock text-yellow-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Pending Review</p>
+                                <p class="text-2xl font-bold text-gray-900">89</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <!-- Filter Candidates -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Filter Candidates</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Job Role</label>
+                                <select id="filterJobRole" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                                    <option value="">All Roles</option>
+                                    <option value="Senior Frontend Developer">Senior Frontend Developer</option>
+                                    <option value="Full Stack Engineer">Full Stack Engineer</option>
+                                    <option value="Data Scientist">Data Scientist</option>
+                                    <option value="UX Designer">UX Designer</option>
+                                    <option value="Backend Developer">Backend Developer</option>
+                                    <option value="Product Manager">Product Manager</option>
+                                    <option value="DevOps Engineer">DevOps Engineer</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Match Score</label>
+                                <select id="filterMatchScore" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                                    <option value="">All Scores</option>
+                                    <option value="90">90%+ (Excellent)</option>
+                                    <option value="80">80-89% (Good)</option>
+                                    <option value="70">70-79% (Fair)</option>
+                                    <option value="60">Below 70% (Poor)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Skills</label>
+                                <input id="filterSkills" type="text" placeholder="e.g., React, Python" class="w-full p-2 border border-gray-300 rounded-md text-sm">
+                            </div>
+                            <button onclick="applyFilters()" class="w-full bg-primary text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                Apply Filters
+                            </button>
+                            <button onclick="clearFilters()" class="w-full bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                                Clear Filters
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- All Candidates List -->
+                    <div class="lg:col-span-3">
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">All Candidates</h3>
+                                <span id="candidateCount" class="text-sm text-gray-600">7 candidates</span>
+                            </div>
+                            <div id="candidatesList" class="space-y-4">
+                                <!-- Candidate 1 -->
+                                <div class="candidate-item border rounded-lg p-4 hover:bg-gray-50 transition-colors relative" 
+                                     data-role="Senior Frontend Developer" data-match="92" data-skills="React,TypeScript">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center cursor-pointer" onclick="openCandidateModal('John Smith', 'john.smith@email.com', '92%')">>
+                                            <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                                                JS
+                                            </div>
+                                            <div class="ml-4">
+                                                <h4 class="font-semibold text-gray-900">John Smith</h4>
+                                                <p class="text-sm text-gray-600">Senior Frontend Developer</p>
+                                                <div class="flex space-x-2 mt-1">
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">React</span>
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">TypeScript</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <div class="text-right">
+                                                <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">92% Match</div>
+                                                <p class="text-xs text-gray-500 mt-1">Applied 2 days ago</p>
+                                            </div>
+                                            <!-- Three dots menu -->
+                                            <div class="relative">
+                                                <button onclick="toggleApplicantMenu('menu1')" class="p-2 hover:bg-gray-200 rounded-full">
+                                                    <i class="fas fa-ellipsis-v text-gray-500"></i>
+                                                </button>
+                                                <div id="menu1" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+                                                    <a href="#" onclick="viewDetails('John Smith')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-eye mr-2"></i>View Details
+                                                    </a>
+                                                    <a href="#" onclick="shortlistCandidate('John Smith')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-star mr-2"></i>Shortlist
+                                                    </a>
+                                                    <a href="#" onclick="removeCandidate('John Smith')" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                                        <i class="fas fa-trash mr-2"></i>Remove
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Candidate 2 -->
+                                <div class="candidate-item border rounded-lg p-4 hover:bg-gray-50 transition-colors relative"
+                                     data-role="Full Stack Engineer" data-match="89" data-skills="Node.js,Python">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center cursor-pointer" onclick="openCandidateModal('Emily Johnson', 'emily.j@email.com', '89%')">
+                                            <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">
+                                                EJ
+                                            </div>
+                                            <div class="ml-4">
+                                                <h4 class="font-semibold text-gray-900">Emily Johnson</h4>
+                                                <p class="text-sm text-gray-600">Full Stack Engineer</p>
+                                                <div class="flex space-x-2 mt-1">
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Node.js</span>
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Python</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <div class="text-right">
+                                                <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">89% Match</div>
+                                                <p class="text-xs text-gray-500 mt-1">Applied 1 week ago</p>
+                                            </div>
+                                            <!-- Three dots menu -->
+                                            <div class="relative">
+                                                <button onclick="toggleApplicantMenu('menu2')" class="p-2 hover:bg-gray-200 rounded-full">
+                                                    <i class="fas fa-ellipsis-v text-gray-500"></i>
+                                                </button>
+                                                <div id="menu2" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+                                                    <a href="#" onclick="viewDetails('Emily Johnson')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-eye mr-2"></i>View Details
+                                                    </a>
+                                                    <a href="#" onclick="shortlistCandidate('Emily Johnson')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-star mr-2"></i>Shortlist
+                                                    </a>
+                                                    <a href="#" onclick="removeCandidate('Emily Johnson')" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                                        <i class="fas fa-trash mr-2"></i>Remove
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Candidate 3 -->
+                                <div class="candidate-item border rounded-lg p-4 hover:bg-gray-50 transition-colors relative"
+                                     data-role="Data Scientist" data-match="84" data-skills="Python,ML">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center cursor-pointer" onclick="openCandidateModal('Michael Chen', 'michael.chen@email.com', '84%')">
+                                            <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                                                MC
+                                            </div>
+                                            <div class="ml-4">
+                                                <h4 class="font-semibold text-gray-900">Michael Chen</h4>
+                                                <p class="text-sm text-gray-600">Data Scientist</p>
+                                                <div class="flex space-x-2 mt-1">
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Python</span>
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">ML</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <div class="text-right">
+                                                <div class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">84% Match</div>
+                                                <p class="text-xs text-gray-500 mt-1">Applied 3 days ago</p>
+                                            </div>
+                                            <!-- Three dots menu -->
+                                            <div class="relative">
+                                                <button onclick="toggleApplicantMenu('menu3')" class="p-2 hover:bg-gray-200 rounded-full">
+                                                    <i class="fas fa-ellipsis-v text-gray-500"></i>
+                                                </button>
+                                                <div id="menu3" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+                                                    <a href="#" onclick="viewDetails('Michael Chen')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-eye mr-2"></i>View Details
+                                                    </a>
+                                                    <a href="#" onclick="shortlistCandidate('Michael Chen')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-star mr-2"></i>Shortlist
+                                                    </a>
+                                                    <a href="#" onclick="removeCandidate('Michael Chen')" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                                        <i class="fas fa-trash mr-2"></i>Remove
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Candidate 4 -->
+                                <div class="candidate-item border rounded-lg p-4 hover:bg-gray-50 transition-colors relative"
+                                     data-role="UX Designer" data-match="82" data-skills="Figma,Adobe XD">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center cursor-pointer" onclick="openCandidateModal('Sarah Davis', 'sarah.davis@email.com', '82%')">
+                                            <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white font-semibold">
+                                                SD
+                                            </div>
+                                            <div class="ml-4">
+                                                <h4 class="font-semibold text-gray-900">Sarah Davis</h4>
+                                                <p class="text-sm text-gray-600">UX Designer</p>
+                                                <div class="flex space-x-2 mt-1">
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Figma</span>
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Adobe XD</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <div class="text-right">
+                                                <div class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">82% Match</div>
+                                                <p class="text-xs text-gray-500 mt-1">Applied 1 day ago</p>
+                                            </div>
+                                            <!-- Three dots menu -->
+                                            <div class="relative">
+                                                <button onclick="toggleApplicantMenu('menu4')" class="p-2 hover:bg-gray-200 rounded-full">
+                                                    <i class="fas fa-ellipsis-v text-gray-500"></i>
+                                                </button>
+                                                <div id="menu4" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+                                                    <a href="#" onclick="viewDetails('Sarah Davis')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-eye mr-2"></i>View Details
+                                                    </a>
+                                                    <a href="#" onclick="shortlistCandidate('Sarah Davis')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-star mr-2"></i>Shortlist
+                                                    </a>
+                                                    <a href="#" onclick="removeCandidate('Sarah Davis')" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                                        <i class="fas fa-trash mr-2"></i>Remove
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Candidate 5 -->
+                                <div class="candidate-item border rounded-lg p-4 hover:bg-gray-50 transition-colors relative"
+                                     data-role="Backend Developer" data-match="78" data-skills="Java,Spring Boot">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center cursor-pointer" onclick="openCandidateModal('Robert Wilson', 'robert.w@email.com', '78%')">
+                                            <div class="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">
+                                                RW
+                                            </div>
+                                            <div class="ml-4">
+                                                <h4 class="font-semibold text-gray-900">Robert Wilson</h4>
+                                                <p class="text-sm text-gray-600">Backend Developer</p>
+                                                <div class="flex space-x-2 mt-1">
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Java</span>
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Spring Boot</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <div class="text-right">
+                                                <div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">78% Match</div>
+                                                <p class="text-xs text-gray-500 mt-1">Applied 5 days ago</p>
+                                            </div>
+                                            <!-- Three dots menu -->
+                                            <div class="relative">
+                                                <button onclick="toggleApplicantMenu('menu5')" class="p-2 hover:bg-gray-200 rounded-full">
+                                                    <i class="fas fa-ellipsis-v text-gray-500"></i>
+                                                </button>
+                                                <div id="menu5" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+                                                    <a href="#" onclick="viewDetails('Robert Wilson')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-eye mr-2"></i>View Details
+                                                    </a>
+                                                    <a href="#" onclick="shortlistCandidate('Robert Wilson')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-star mr-2"></i>Shortlist
+                                                    </a>
+                                                    <a href="#" onclick="removeCandidate('Robert Wilson')" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                                        <i class="fas fa-trash mr-2"></i>Remove
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Candidate 6 -->
+                                <div class="candidate-item border rounded-lg p-4 hover:bg-gray-50 transition-colors relative"
+                                     data-role="Product Manager" data-match="76" data-skills="Agile,Jira">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center cursor-pointer" onclick="openCandidateModal('Lisa Anderson', 'lisa.anderson@email.com', '76%')">
+                                            <div class="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
+                                                LA
+                                            </div>
+                                            <div class="ml-4">
+                                                <h4 class="font-semibold text-gray-900">Lisa Anderson</h4>
+                                                <p class="text-sm text-gray-600">Product Manager</p>
+                                                <div class="flex space-x-2 mt-1">
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Agile</span>
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Jira</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <div class="text-right">
+                                                <div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">76% Match</div>
+                                                <p class="text-xs text-gray-500 mt-1">Applied 1 week ago</p>
+                                            </div>
+                                            <!-- Three dots menu -->
+                                            <div class="relative">
+                                                <button onclick="toggleApplicantMenu('menu6')" class="p-2 hover:bg-gray-200 rounded-full">
+                                                    <i class="fas fa-ellipsis-v text-gray-500"></i>
+                                                </button>
+                                                <div id="menu6" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+                                                    <a href="#" onclick="viewDetails('Lisa Anderson')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-eye mr-2"></i>View Details
+                                                    </a>
+                                                    <a href="#" onclick="shortlistCandidate('Lisa Anderson')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-star mr-2"></i>Shortlist
+                                                    </a>
+                                                    <a href="#" onclick="removeCandidate('Lisa Anderson')" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                                        <i class="fas fa-trash mr-2"></i>Remove
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Candidate 7 -->
+                                <div class="candidate-item border rounded-lg p-4 hover:bg-gray-50 transition-colors relative"
+                                     data-role="DevOps Engineer" data-match="74" data-skills="Docker,Kubernetes">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center cursor-pointer" onclick="openCandidateModal('David Kumar', 'david.kumar@email.com', '74%')">
+                                            <div class="w-12 h-12 bg-teal-500 rounded-full flex items-center justify-center text-white font-semibold">
+                                                DK
+                                            </div>
+                                            <div class="ml-4">
+                                                <h4 class="font-semibold text-gray-900">David Kumar</h4>
+                                                <p class="text-sm text-gray-600">DevOps Engineer</p>
+                                                <div class="flex space-x-2 mt-1">
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Docker</span>
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Kubernetes</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <div class="text-right">
+                                                <div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">74% Match</div>
+                                                <p class="text-xs text-gray-500 mt-1">Applied 6 days ago</p>
+                                            </div>
+                                            <!-- Three dots menu -->
+                                            <div class="relative">
+                                                <button onclick="toggleApplicantMenu('menu7')" class="p-2 hover:bg-gray-200 rounded-full">
+                                                    <i class="fas fa-ellipsis-v text-gray-500"></i>
+                                                </button>
+                                                <div id="menu7" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+                                                    <a href="#" onclick="viewDetails('David Kumar')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-eye mr-2"></i>View Details
+                                                    </a>
+                                                    <a href="#" onclick="shortlistCandidate('David Kumar')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <i class="fas fa-star mr-2"></i>Shortlist
+                                                    </a>
+                                                    <a href="#" onclick="removeCandidate('David Kumar')" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                                        <i class="fas fa-trash mr-2"></i>Remove
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Applicants Section -->
+
+            <!-- Job Posting Section -->
+            <div id="job-posting-section" class="content-section hidden">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Job Posting Management</h1>
+                
+                <!-- Job Posting Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-blue-100 rounded-full">
+                                <i class="fas fa-briefcase text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Active Jobs</p>
+                                <p class="text-2xl font-bold text-gray-900">8</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-green-100 rounded-full">
+                                <i class="fas fa-eye text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Views</p>
+                                <p class="text-2xl font-bold text-gray-900">1,284</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-yellow-100 rounded-full">
+                                <i class="fas fa-paper-plane text-yellow-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Applications</p>
+                                <p class="text-2xl font-bold text-gray-900">247</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-purple-100 rounded-full">
+                                <i class="fas fa-chart-line text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Avg. Response Rate</p>
+                                <p class="text-2xl font-bold text-gray-900">19.2%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Job Role Management -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Add New Job -->
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-900">
+                                    <i class="fas fa-plus-circle text-primary mr-2"></i>Job Role Management
+                                </h2>
+                                <div class="flex space-x-2">
+                                    <button onclick="showAddJobForm()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                        <i class="fas fa-plus mr-2"></i>Add Job
+                                    </button>
+                                    <button onclick="toggleUploadForm()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                                        <i class="fas fa-upload mr-2"></i>Upload JD
+                                    </button>
+                                </div>
+                            </div>
+                    
+                            <!-- Upload Form (Hidden by default) -->
+                            <div id="uploadForm" class="hidden mb-6 p-4 bg-gray-50 rounded-lg">
+                                <h3 class="font-medium text-gray-900 mb-3">Upload Job Description</h3>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                    <i class="fas fa-file-upload text-3xl text-gray-400 mb-3"></i>
+                                    <p class="text-gray-600 mb-2">Drop your job description here or click to upload</p>
+                                    <input type="file" id="jobFile" accept=".pdf,.doc,.docx" class="hidden">
+                                    <button onclick="document.getElementById('jobFile').click()" 
+                                            class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                        Choose File
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Add Job Form (Hidden by default) -->
+                            <div id="addJobForm" class="hidden mb-6 p-4 bg-gray-50 rounded-lg">
+                                <h3 class="font-medium text-gray-900 mb-3">Add New Job Role</h3>
+                                <form class="space-y-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                                            <input type="text" class="w-full p-2 border border-gray-300 rounded-md" placeholder="e.g., Senior Frontend Developer">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                                            <select class="w-full p-2 border border-gray-300 rounded-md">
+                                                <option>Engineering</option>
+                                                <option>Product</option>
+                                                <option>Design</option>
+                                                <option>Marketing</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                            <input type="text" class="w-full p-2 border border-gray-300 rounded-md" placeholder="e.g., San Francisco, CA">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Experience Level</label>
+                                            <select class="w-full p-2 border border-gray-300 rounded-md">
+                                                <option>Entry Level</option>
+                                                <option>Mid Level</option>
+                                                <option>Senior Level</option>
+                                                <option>Lead/Principal</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Required Skills (comma-separated)</label>
+                                        <input type="text" class="w-full p-2 border border-gray-300 rounded-md" placeholder="React, JavaScript, Node.js, MongoDB">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Job Description</label>
+                                        <textarea rows="3" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Describe the role and responsibilities..."></textarea>
+                                    </div>
+                                    <div class="flex justify-end space-x-3">
+                                        <button type="button" onclick="hideAddJobForm()" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">
+                                            Save Job
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Active Jobs List -->
+                            <div class="space-y-3">
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="font-medium text-gray-900">Senior Frontend Developer</h4>
+                                            <p class="text-sm text-gray-600">Engineering • San Francisco, CA</p>
+                                            <div class="flex flex-wrap gap-1 mt-2">
+                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">React</span>
+                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">JavaScript</span>
+                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">TypeScript</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">23 Matches</span>
+                                            <div class="flex space-x-1">
+                                                <button onclick="editJob('senior-frontend-developer')" class="text-gray-400 hover:text-blue-600" title="Edit Job">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button onclick="deleteJob('senior-frontend-developer', 'Senior Frontend Developer')" class="text-gray-400 hover:text-red-600" title="Delete Job">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="font-medium text-gray-900">Full Stack Engineer</h4>
+                                            <p class="text-sm text-gray-600">Engineering • Remote</p>
+                                            <div class="flex flex-wrap gap-1 mt-2">
+                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Node.js</span>
+                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Python</span>
+                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">MongoDB</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">18 Matches</span>
+                                            <div class="flex space-x-1">
+                                                <button onclick="editJob('full-stack-engineer')" class="text-gray-400 hover:text-blue-600" title="Edit Job">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button onclick="deleteJob('full-stack-engineer', 'Full Stack Engineer')" class="text-gray-400 hover:text-red-600" title="Delete Job">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="font-medium text-gray-900">Data Scientist</h4>
+                                            <p class="text-sm text-gray-600">Data • New York, NY</p>
+                                            <div class="flex flex-wrap gap-1 mt-2">
+                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Python</span>
+                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Machine Learning</span>
+                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">TensorFlow</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">12 Matches</span>
+                                            <div class="flex space-x-1">
+                                                <button onclick="editJob('data-scientist')" class="text-gray-400 hover:text-blue-600" title="Edit Job">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button onclick="deleteJob('data-scientist', 'Data Scientist')" class="text-gray-400 hover:text-red-600" title="Delete Job">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Job Performance Analytics -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Job Performance</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="font-medium text-gray-700">Senior Frontend Developer</span>
+                                <span class="text-green-600 font-semibold">23 applications</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="font-medium text-gray-700">Full Stack Engineer</span>
+                                <span class="text-green-600 font-semibold">18 applications</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="font-medium text-gray-700">Data Scientist</span>
+                                <span class="text-yellow-600 font-semibold">12 applications</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Job Posting Section -->
+            
+        </main>
+    </div>
+
+    <!-- Candidate Detail Modal -->
+    <div id="candidateModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h3 id="modalCandidateName" class="text-2xl font-bold text-gray-900"></h3>
+                        <p id="modalCandidateEmail" class="text-gray-600"></p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span id="modalCandidateMatch" class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium"></span>
+                        <button onclick="closeCandidateModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-3">Resume Summary</h4>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <p class="text-sm text-gray-700">Experienced software developer with expertise in modern web technologies. Strong background in React, Node.js, and database design. Proven track record of delivering high-quality solutions in fast-paced environments.</p>
+                        </div>
+                        
+                        <h4 class="font-semibold text-gray-900 mb-3">Experience</h4>
+                        <div class="space-y-3 mb-4">
+                            <div class="border-l-4 border-blue-500 pl-4">
+                                <h5 class="font-medium">Senior Developer</h5>
+                                <p class="text-sm text-gray-600">TechCorp Inc. • 2021 - Present</p>
+                            </div>
+                            <div class="border-l-4 border-gray-300 pl-4">
+                                <h5 class="font-medium">Frontend Developer</h5>
+                                <p class="text-sm text-gray-600">StartupXYZ • 2019 - 2021</p>
+                            </div>
+                        </div>
+                        
+                        <h4 class="font-semibold text-gray-900 mb-3">Education</h4>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="font-medium">B.S. Computer Science</p>
+                            <p class="text-sm text-gray-600">University of Technology • 2015 - 2019</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-3">Matched Skills</h4>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">JavaScript ✓</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">React ✓</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Node.js ✓</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">MongoDB ✓</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Git ✓</span>
+                        </div>
+                        
+                        <h4 class="font-semibold text-gray-900 mb-3">Missing Skills</h4>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Docker</span>
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Kubernetes</span>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">AWS (Basic)</span>
+                        </div>
+                        
+                        <h4 class="font-semibold text-gray-900 mb-3">Actions</h4>
+                        <div class="space-y-3">
+                            <button class="w-full bg-primary text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-download mr-2"></i>Download Resume
+                            </button>
+                            <button class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                <i class="fas fa-envelope mr-2"></i>Send Interview Invite
+                            </button>
+                            <button class="w-full bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition-colors">
+                                <i class="fas fa-star mr-2"></i>Add to Shortlist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar Navigation Functions
+        function showSection(sectionName) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Remove active state from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('bg-gray-100', 'text-gray-900');
+                item.classList.add('text-gray-600', 'hover:bg-gray-50', 'hover:text-gray-900');
+            });
+            
+            // Show selected section
+            const selectedSection = document.getElementById(sectionName + '-section');
+            if (selectedSection) {
+                selectedSection.classList.remove('hidden');
+            }
+            
+            // Add active state to selected nav item
+            const selectedNavItem = document.getElementById('nav-' + sectionName);
+            if (selectedNavItem) {
+                selectedNavItem.classList.remove('text-gray-600', 'hover:bg-gray-50', 'hover:text-gray-900');
+                selectedNavItem.classList.add('bg-gray-100', 'text-gray-900');
+            }
+        }
+
+        // Initialize dashboard on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('dashboard');
+        });
+
+        // Job Management Functions
+        function editJob(jobId) {
+            // Hide existing forms first
+            document.getElementById('addJobForm').classList.add('hidden');
+            document.getElementById('uploadForm').classList.add('hidden');
+            
+            // Get job data based on jobId (in a real app, this would come from a database)
+            const jobData = getJobData(jobId);
+            
+            if (jobData) {
+                // Populate the form with existing data
+                populateEditForm(jobData);
+                
+                // Show the edit form (reuse the add form but populate it)
+                document.getElementById('addJobForm').classList.remove('hidden');
+                
+                // Change form title and button text
+                document.querySelector('#addJobForm h3').textContent = 'Edit Job Role';
+                document.querySelector('#addJobForm button[type="submit"]').textContent = 'Update Job';
+                document.querySelector('#addJobForm button[type="submit"]').setAttribute('onclick', `updateJob('${jobId}')`);
+            } else {
+                alert('Job not found. Please try again.');
+            }
+        }
+
+        function deleteJob(jobId, jobTitle) {
+            if (confirm(`Are you sure you want to delete "${jobTitle}"? This action cannot be undone.`)) {
+                // Find and remove the job element from the DOM
+                const jobElements = document.querySelectorAll('.border.border-gray-200.rounded-lg.p-4');
+                
+                jobElements.forEach(element => {
+                    const titleElement = element.querySelector('h4');
+                    if (titleElement && titleElement.textContent.trim() === jobTitle) {
+                        // Add fade out animation
+                        element.style.transition = 'opacity 0.3s ease';
+                        element.style.opacity = '0';
+                        
+                        // Remove element after animation
+                        setTimeout(() => {
+                            element.remove();
+                            // Show success message
+                            showNotification(`"${jobTitle}" has been deleted successfully.`, 'success');
+                        }, 300);
+                    }
+                });
+            }
+        }
+
+        function updateJob(jobId) {
+            // In a real application, this would send data to the server
+            
+            // Get form data
+            const form = document.querySelector('#addJobForm form');
+            const formData = new FormData(form);
+            
+            // Show success message
+            showNotification('Job updated successfully!', 'success');
+            
+            // Reset form
+            resetEditForm();
+            
+            // Hide form
+            hideAddJobForm();
+        }
+
+        function getJobData(jobId) {
+            // Mock data - in a real app, this would come from your backend
+            const jobs = {
+                'senior-frontend-developer': {
+                    title: 'Senior Frontend Developer',
+                    department: 'Engineering',
+                    location: 'San Francisco, CA',
+                    experience: 'Senior Level',
+                    skills: 'React, JavaScript, TypeScript',
+                    description: 'We are looking for a skilled Frontend Developer to join our team...'
+                },
+                'full-stack-engineer': {
+                    title: 'Full Stack Engineer',
+                    department: 'Engineering',
+                    location: 'Remote',
+                    experience: 'Mid Level',
+                    skills: 'Node.js, Python, MongoDB',
+                    description: 'Join our engineering team as a Full Stack Engineer...'
+                },
+                'data-scientist': {
+                    title: 'Data Scientist',
+                    department: 'Data',
+                    location: 'New York, NY',
+                    experience: 'Senior Level',
+                    skills: 'Python, Machine Learning, TensorFlow',
+                    description: 'We are seeking a Data Scientist to help us analyze...'
+                }
+            };
+            
+            return jobs[jobId];
+        }
+
+        function populateEditForm(jobData) {
+            const form = document.querySelector('#addJobForm form');
+            
+            // Populate form fields
+            form.querySelector('input[placeholder*="Job Title"]').value = jobData.title;
+            form.querySelector('select').value = jobData.department; // Department select
+            form.querySelector('input[placeholder*="Location"]').value = jobData.location;
+            form.querySelectorAll('select')[1].value = jobData.experience; // Experience select
+            form.querySelector('input[placeholder*="Skills"]').value = jobData.skills;
+            form.querySelector('textarea').value = jobData.description;
+        }
+
+        function resetEditForm() {
+            // Reset form title and button text back to "Add"
+            document.querySelector('#addJobForm h3').textContent = 'Add New Job Role';
+            const submitBtn = document.querySelector('#addJobForm button[type="submit"]');
+            submitBtn.textContent = 'Save Job';
+            submitBtn.removeAttribute('onclick');
+            
+            // Clear form
+            document.querySelector('#addJobForm form').reset();
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500 text-white' : 
+                type === 'error' ? 'bg-red-500 text-white' : 
+                'bg-blue-500 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Show/Hide forms
+        function showAddJobForm() {
+            document.getElementById('addJobForm').classList.remove('hidden');
+            document.getElementById('uploadForm').classList.add('hidden');
+        }
+
+        function hideAddJobForm() {
+            document.getElementById('addJobForm').classList.add('hidden');
+        }
+
+        function toggleUploadForm() {
+            const uploadForm = document.getElementById('uploadForm');
+            const addJobForm = document.getElementById('addJobForm');
+            
+            if (uploadForm.classList.contains('hidden')) {
+                uploadForm.classList.remove('hidden');
+                addJobForm.classList.add('hidden');
+            } else {
+                uploadForm.classList.add('hidden');
+            }
+        }
+
+        // Modal functions
+        function openCandidateModal(name, email, match) {
+            document.getElementById('modalCandidateName').textContent = name;
+            document.getElementById('modalCandidateEmail').textContent = email;
+            document.getElementById('modalCandidateMatch').textContent = match + ' Match';
+            document.getElementById('candidateModal').classList.remove('hidden');
+            document.getElementById('candidateModal').classList.add('flex');
+        }
+
+        function closeCandidateModal() {
+            document.getElementById('candidateModal').classList.add('hidden');
+            document.getElementById('candidateModal').classList.remove('flex');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Analytics Chart
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Applications',
+                        data: [30, 45, 35, 55, 40, 60],
+                        borderColor: 'rgb(37, 99, 235)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Hires',
+                        data: [5, 8, 6, 12, 9, 15],
+                        borderColor: 'rgb(34, 197, 94)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+
+        // Load and display current user name
+        document.addEventListener('DOMContentLoaded', function() {
+            const userNameElement = document.getElementById('user-name');
+            
+            // Get current user from localStorage
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            let displayName = 'HR User';
+            
+            if (currentUser.name) {
+                displayName = currentUser.name;
+                userNameElement.textContent = currentUser.name;
+            } else if (currentUser.username) {
+                // If name not available, use username with proper formatting
+                const formattedName = currentUser.username
+                    .split('.')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                displayName = formattedName;
+                userNameElement.textContent = formattedName;
+            } else {
+                // Fallback to default
+                userNameElement.textContent = 'HR User';
+            }
+
+            // Show welcome back popup if user is logged in
+            if (currentUser.name || currentUser.username) {
+                showWelcomeBackPopup(displayName);
+            }
+        });
+
+        // Welcome back popup function
+        function showWelcomeBackPopup(userName) {
+            // Create welcome popup
+            const popup = document.createElement('div');
+            popup.id = 'welcomePopup';
+            popup.className = 'fixed top-20 right-4 bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-500';
+            popup.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-green-900">Welcome Back!</h4>
+                        <p class="text-sm text-green-700">Hello ${userName}, glad to see you again!</p>
+                    </div>
+                    <button onclick="closeWelcomePopup()" class="ml-4 text-green-600 hover:text-green-800">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(popup);
+
+            // Animate popup in after a short delay
+            setTimeout(() => {
+                popup.classList.remove('translate-x-full');
+                popup.classList.add('translate-x-0');
+            }, 500);
+
+            // Auto-close popup after 4 seconds
+            setTimeout(() => {
+                closeWelcomePopup();
+            }, 4500);
+        }
+
+        function closeWelcomePopup() {
+            const popup = document.getElementById('welcomePopup');
+            if (popup) {
+                popup.classList.remove('translate-x-0');
+                popup.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (popup.parentNode) {
+                        popup.remove();
+                    }
+                }, 500);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('userRole');
+            window.location.href = 'index.html';
+        }
+
+        // Three-dot menu functions for applicants
+        function toggleApplicantMenu(menuId) {
+            // Close all other menus first
+            const allMenus = document.querySelectorAll('[id^="menu"]');
+            allMenus.forEach(menu => {
+                if (menu.id !== menuId) {
+                    menu.classList.add('hidden');
+                }
+            });
+            
+            // Toggle the clicked menu
+            const menu = document.getElementById(menuId);
+            menu.classList.toggle('hidden');
+        }
+
+        function viewDetails(name) {
+            showDetailsModal(name);
+            closeAllMenus();
+        }
+
+        function showDetailsModal(name) {
+            // Create modal HTML
+            const modal = document.createElement('div');
+            modal.id = 'detailsModal';
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
+            modal.innerHTML = `
+                <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Candidate Details - ${name}</h3>
+                            <button onclick="closeDetailsModal()" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        <div class="mt-4 space-y-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-900 mb-2">📋 Complete Resume/CV</h4>
+                                <p class="text-sm text-gray-600">Full professional background and work history</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-900 mb-2">🎯 Skills Assessment</h4>
+                                <p class="text-sm text-gray-600">Technical and soft skills evaluation results</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-900 mb-2">💬 Interview History</h4>
+                                <p class="text-sm text-gray-600">Previous interview rounds and feedback</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-900 mb-2">👥 References</h4>
+                                <p class="text-sm text-gray-600">Professional references and recommendations</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-900 mb-2">💼 Portfolio/Work Samples</h4>
+                                <p class="text-sm text-gray-600">Project demonstrations and work examples</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end mt-6 space-x-3">
+                            <button onclick="closeDetailsModal()" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-colors">
+                                Close
+                            </button>
+                            <button onclick="downloadResume('${name}')" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-download mr-2"></i>Download Resume
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function closeDetailsModal() {
+            const modal = document.getElementById('detailsModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function downloadResume(name) {
+            alert(`Downloading resume for ${name}...`);
+            closeDetailsModal();
+        }
+
+        // Filter functionality
+        function applyFilters() {
+            const jobRole = document.getElementById('filterJobRole').value;
+            const matchScore = document.getElementById('filterMatchScore').value;
+            const skills = document.getElementById('filterSkills').value.toLowerCase();
+            
+            const candidates = document.querySelectorAll('.candidate-item');
+            let visibleCount = 0;
+
+            candidates.forEach(candidate => {
+                let isVisible = true;
+
+                // Filter by job role
+                if (jobRole && candidate.getAttribute('data-role') !== jobRole) {
+                    isVisible = false;
+                }
+
+                // Filter by match score
+                if (matchScore) {
+                    const candidateMatch = parseInt(candidate.getAttribute('data-match'));
+                    const filterValue = parseInt(matchScore);
+                    
+                    if (filterValue === 90 && candidateMatch < 90) isVisible = false;
+                    if (filterValue === 80 && (candidateMatch < 80 || candidateMatch >= 90)) isVisible = false;
+                    if (filterValue === 70 && (candidateMatch < 70 || candidateMatch >= 80)) isVisible = false;
+                    if (filterValue === 60 && candidateMatch >= 70) isVisible = false;
+                }
+
+                // Filter by skills
+                if (skills) {
+                    const candidateSkills = candidate.getAttribute('data-skills').toLowerCase();
+                    const skillsArray = skills.split(',').map(skill => skill.trim());
+                    const hasMatchingSkill = skillsArray.some(skill => candidateSkills.includes(skill));
+                    
+                    if (!hasMatchingSkill) {
+                        isVisible = false;
+                    }
+                }
+
+                // Show/hide candidate
+                if (isVisible) {
+                    candidate.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    candidate.style.display = 'none';
+                }
+            });
+
+            // Update candidate count
+            updateCandidateCount(visibleCount);
+            
+            // Show feedback message
+            showFilterMessage(`Showing ${visibleCount} candidate(s) matching your criteria`);
+        }
+
+        function clearFilters() {
+            // Clear all filter inputs
+            document.getElementById('filterJobRole').value = '';
+            document.getElementById('filterMatchScore').value = '';
+            document.getElementById('filterSkills').value = '';
+            
+            // Show all candidates
+            const candidates = document.querySelectorAll('.candidate-item');
+            candidates.forEach(candidate => {
+                candidate.style.display = 'block';
+            });
+            
+            // Reset candidate count
+            updateCandidateCount(candidates.length);
+            
+            // Show feedback message
+            showFilterMessage('All filters cleared - showing all candidates');
+        }
+
+        function updateCandidateCount(count) {
+            const countElement = document.getElementById('candidateCount');
+            countElement.textContent = `${count} candidate${count !== 1 ? 's' : ''}`;
+        }
+
+        function showFilterMessage(message) {
+            // Remove existing message if any
+            const existingMessage = document.getElementById('filterMessage');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            // Create new message
+            const messageDiv = document.createElement('div');
+            messageDiv.id = 'filterMessage';
+            messageDiv.className = 'bg-blue-50 border border-blue-200 text-blue-800 px-4 py-2 rounded-lg mb-4';
+            messageDiv.innerHTML = `<i class="fas fa-info-circle mr-2"></i>${message}`;
+
+            // Insert message before candidate list
+            const candidatesList = document.getElementById('candidatesList');
+            candidatesList.parentNode.insertBefore(messageDiv, candidatesList);
+
+            // Remove message after 3 seconds
+            setTimeout(() => {
+                if (messageDiv && messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 3000);
+        }
+
+        function shortlistCandidate(name) {
+            if (confirm(`Are you sure you want to shortlist ${name}?`)) {
+                alert(`${name} has been successfully added to the shortlist!\n\nThey will be notified about moving to the next stage of the hiring process.`);
+                closeAllMenus();
+            }
+        }
+
+        function removeCandidate(name) {
+            if (confirm(`Are you sure you want to remove ${name} from this application process?\n\nThis action cannot be undone.`)) {
+                alert(`${name} has been removed from the application process.\n\nThey will be notified about the decision.`);
+                closeAllMenus();
+            }
+        }
+
+        function closeAllMenus() {
+            const allMenus = document.querySelectorAll('[id^="menu"]');
+            allMenus.forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        }
+
+        // Close menus when clicking outside
+        document.addEventListener('click', function(event) {
+            const isMenuButton = event.target.closest('button[onclick^="toggleApplicantMenu"]');
+            const isMenuContent = event.target.closest('[id^="menu"]');
+            
+            if (!isMenuButton && !isMenuContent) {
+                closeAllMenus();
+            }
+
+            // Close modal when clicking outside
+            const modal = document.getElementById('detailsModal');
+            if (modal && event.target === modal) {
+                closeDetailsModal();
+            }
+        });
+    </script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillMatch AI - Match Your Skills to the Right Job</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#64748b'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+        <!-- Header -->
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="nav-content">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="logo">SkillMatch AI</h1>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#" class="nav-link">Home</a>
+                        <a href="login-applicant.html" class="nav-link">Login</a>
+                        <a href="signup.html" class="btn-primary">Sign Up</a>
+                        <!-- Dark Mode Toggle Switch -->
+                        <div class="theme-toggle-container">
+                            <input type="checkbox" id="theme-toggle" class="theme-toggle-input">
+                            <label for="theme-toggle" class="theme-toggle-label">
+                                <span class="theme-toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="hero-title">
+                    Match your skills to the right job <span class="text-blue-600">instantly</span>
+                </h1>
+                <p class="hero-subtitle">
+                    AI-powered resume analysis and job matching for smarter hiring decisions
+                </p>
+                <div class="hero-buttons">
+                    <a href="signup.html" class="btn-primary">
+                        <i class="fas fa-user-plus mr-2"></i>Sign Up
+                    </a>
+                    <a href="login-applicant.html" class="btn-secondary">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login as Applicant
+                    </a>
+                    <a href="login-hr.html" class="btn-secondary">
+                        <i class="fas fa-briefcase mr-2"></i>Login as HR
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Powerful Features for Modern Recruitment
+                </h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Our AI-driven platform transforms how companies find talent and how candidates discover opportunities
+                </p>
+            </div>
+            
+            <div class="card-grid card-grid-4">
+                <div class="feature-card">
+                    <div class="feature-icon bg-blue-100">
+                        <i class="fas fa-chart-line text-primary"></i>
+                    </div>
+                    <h3 class="feature-title">Resume Scoring</h3>
+                    <p class="feature-description">AI-powered analysis provides detailed scoring and feedback on resume quality and job compatibility.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon bg-green-100">
+                        <i class="fas fa-search text-green-600"></i>
+                    </div>
+                    <h3 class="feature-title">Smart Job Matching</h3>
+                    <p class="feature-description">Advanced algorithms match candidates with relevant opportunities based on skills and experience.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon bg-purple-100">
+                        <span class="emoji-icon">📊</span>
+                        <i class="fas fa-chart-bar text-purple-600"></i>
+                    </div>
+                    <h3 class="feature-title">HR Analytics 📈</h3>
+                    <p class="feature-description">Comprehensive insights and metrics to help HR teams make data-driven hiring decisions.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon bg-orange-100">
+                        <i class="fas fa-bolt text-orange-600"></i>
+                    </div>
+                    <h3 class="feature-title">Real-Time Recommendations</h3>
+                    <p class="feature-description">Instant suggestions and updates as new jobs and candidates become available.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-flex">
+                <div class="footer-brand">
+                    <h3 class="text-xl font-bold text-primary mr-4">SkillMatch AI</h3>
+                    <p class="text-gray-400 text-sm">AI-powered recruitment platform</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">About</a>
+                    <a href="#" class="footer-link">Privacy</a>
+                    <a href="#" class="footer-link">Support</a>
+                    <div class="footer-social">
+                        <a href="#" class="transition-colors">
+                            <i class="fab fa-linkedin text-lg"></i>
+                        </a>
+                        <a href="#" class="transition-colors">
+                            <i class="fab fa-twitter text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

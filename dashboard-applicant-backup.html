@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicant Dashboard - SkillMatch AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#64748b'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="header fixed top-0 left-0 right-0 z-50">
+        <nav class="nav-container">
+            <div class="nav-content">
+                <div class="flex items-center">
+                    <h1 class="logo">SkillMatch AI</h1>
+                    <span class="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">Applicant</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Dark Mode Toggle Switch -->
+                    <div class="theme-toggle-container">
+                        <input type="checkbox" id="theme-toggle" class="theme-toggle-input">
+                        <label for="theme-toggle" class="theme-toggle-label">
+                            <span class="theme-toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="text-sm text-gray-700">Welcome, <span id="user-name" class="font-medium">Applicant</span></div>
+                    <button onclick="logout()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Sidebar and Main Content Layout -->
+    <div class="flex pt-16 min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white shadow-sm border-r border-gray-200 fixed left-0 top-16 bottom-0 overflow-y-auto z-40">
+            <nav class="mt-5 px-2">
+                <div class="space-y-1">
+                    <a href="#" onclick="showSection('dashboard')" id="nav-dashboard" 
+                       class="nav-item bg-gray-100 text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-tachometer-alt text-gray-500 mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" onclick="showSection('search-jobs')" id="nav-search-jobs"
+                       class="nav-item text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-search text-gray-400 group-hover:text-gray-500 mr-3"></i>
+                        Search Job Openings
+                    </a>
+                    <a href="#" onclick="showSection('profile')" id="nav-profile"
+                       class="nav-item text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-user text-gray-400 group-hover:text-gray-500 mr-3"></i>
+                        Profile
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 ml-64 p-8 overflow-y-auto bg-gray-50">
+        <!-- Resume Upload Section -->
+        <div class="card mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                <i class="fas fa-file-upload text-primary mr-2"></i>Resume Upload
+            </h2>
+            <div class="upload-area" id="resumeUpload">
+                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                <p class="text-lg text-gray-600 mb-2">Drop your resume here or click to upload</p>
+                <p class="text-sm text-gray-500 mb-4">Supports PDF, DOC, DOCX (Max 5MB)</p>
+                <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" class="hidden">
+                <button onclick="document.getElementById('resumeFile').click()" 
+                        class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    Choose File
+                </button>
+            </div>
+            <div id="uploadedResume" class="hidden mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                        <span class="text-sm font-medium">resume.pdf</span>
+                    </div>
+                    <button class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Resume Match Statistics -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Match Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-green-100 rounded-full">
+                                <i class="fas fa-percentage text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Overall Match</p>
+                                <p class="text-2xl font-bold text-green-600">87%</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-blue-100 rounded-full">
+                                <i class="fas fa-briefcase text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Best Matches</p>
+                                <p class="text-2xl font-bold text-blue-600">12</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-yellow-100 rounded-full">
+                                <i class="fas fa-chart-line text-yellow-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Skill Score</p>
+                                <p class="text-2xl font-bold text-yellow-600">8.4</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Radar Chart -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Skill Match Analysis</h3>
+                    <div class="h-64">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Matching Roles -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Top 5 Matching Roles</h3>
+                    <div class="h-64">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Explorer & Missing Skills -->
+            <div class="space-y-6">
+                <!-- Missing Skills Word Cloud -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Skills to Improve</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full">Machine Learning</span>
+                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">AWS</span>
+                        <span class="bg-red-100 text-red-800 text-lg px-4 py-2 rounded-full">Docker</span>
+                        <span class="bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full">Kubernetes</span>
+                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">GraphQL</span>
+                        <span class="bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full">TypeScript</span>
+                    </div>
+                </div>
+
+                <!-- Job Explorer -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Job Opportunities</h3>
+                        <div class="flex space-x-2">
+                            <button class="p-2 text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                            <button class="p-2 text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="mb-4 space-y-2">
+                        <select id="categoryFilter" class="w-full p-2 border border-gray-300 rounded-md text-sm" onchange="filterJobs()">
+                            <option value="">All Categories</option>
+                            <option value="Software Development">Software Development</option>
+                            <option value="Data Science">Data Science</option>
+                            <option value="DevOps">DevOps</option>
+                        </select>
+                        <input id="skillsSearch" type="text" placeholder="Search by skills..." 
+                               class="w-full p-2 border border-gray-300 rounded-md text-sm" 
+                               oninput="filterJobs()">
+                    </div>
+
+                    <!-- Job List -->
+                    <div id="jobList" class="space-y-3">
+                        <div class="job-card border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" 
+                             data-category="Software Development" data-skills="React,JavaScript"
+                             onclick="openJobDetails('Senior Frontend Developer', 'TechCorp', '92%')">>
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-medium text-gray-900">Senior Frontend Developer</h4>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">92%</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">TechCorp • San Francisco, CA</p>
+                            <div class="flex justify-between items-center">
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">React</span>
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">JavaScript</span>
+                                </div>
+                                <button class="text-primary text-sm hover:underline">View Details</button>
+                            </div>
+                        </div>
+
+                        <div class="job-card border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" 
+                             data-category="Software Development" data-skills="Node.js,MongoDB"
+                             onclick="openJobDetails('Full Stack Engineer', 'StartupXYZ', '89%')">>
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-medium text-gray-900">Full Stack Engineer</h4>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">89%</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">StartupXYZ • Remote</p>
+                            <div class="flex justify-between items-center">
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">Node.js</span>
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">MongoDB</span>
+                                </div>
+                                <button class="text-primary text-sm hover:underline">View Details</button>
+                            </div>
+                        </div>
+
+                        <div class="job-card border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" 
+                             data-category="Data Science" data-skills="Python,SQL"
+                             onclick="openJobDetails('Data Analyst', 'DataCorp', '76%')">>
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-medium text-gray-900">Data Analyst</h4>
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">76%</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">DataCorp • New York, NY</p>
+                            <div class="flex justify-between items-center">
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">Python</span>
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">SQL</span>
+                                </div>
+                                <button class="text-primary text-sm hover:underline">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Detail Modal -->
+    <div id="jobModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 id="modalJobTitle" class="text-xl font-bold text-gray-900"></h3>
+                        <p id="modalCompany" class="text-gray-600"></p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span id="modalMatch" class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium"></span>
+                        <button onclick="closeJobModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Job Description</h4>
+                        <p class="text-gray-700">We are looking for an experienced developer to join our team and work on cutting-edge projects...</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Required Skills</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">JavaScript</span>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">React</span>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">Node.js</span>
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Docker (Missing)</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Salary Range</h4>
+                        <p class="text-gray-700">$80,000 - $120,000 per year</p>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button onclick="closeJobModal()" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Close
+                        </button>
+                        <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">
+                            Apply Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Resume upload functionality
+        document.getElementById('resumeFile').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                document.getElementById('resumeUpload').classList.add('hidden');
+                document.getElementById('uploadedResume').classList.remove('hidden');
+            }
+        });
+
+        // Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Radar Chart
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Technical Skills', 'Communication', 'Leadership', 'Problem Solving', 'Teamwork', 'Creativity'],
+                    datasets: [{
+                        label: 'Your Skills',
+                        data: [85, 70, 60, 90, 80, 75],
+                        borderColor: 'rgb(37, 99, 235)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        pointBackgroundColor: 'rgb(37, 99, 235)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Bar Chart
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Senior Frontend Dev', 'Full Stack Engineer', 'UI/UX Designer', 'Data Analyst', 'Product Manager'],
+                    datasets: [{
+                        label: 'Match Percentage',
+                        data: [92, 89, 83, 76, 68],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(34, 197, 94, 0.7)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(34, 197, 94)',
+                            'rgb(34, 197, 94)',
+                            'rgb(59, 130, 246)',
+                            'rgb(245, 158, 11)',
+                            'rgb(239, 68, 68)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        });
+
+        // Modal functions
+        function openJobDetails(title, company, match) {
+            document.getElementById('modalJobTitle').textContent = title;
+            document.getElementById('modalCompany').textContent = company;
+            document.getElementById('modalMatch').textContent = match + ' Match';
+            document.getElementById('jobModal').classList.remove('hidden');
+            document.getElementById('jobModal').classList.add('flex');
+        }
+
+        function closeJobModal() {
+            document.getElementById('jobModal').classList.add('hidden');
+            document.getElementById('jobModal').classList.remove('flex');
+        }
+
+        // Load and display current user name
+        document.addEventListener('DOMContentLoaded', function() {
+            const userNameElement = document.getElementById('user-name');
+            
+            // Get current user from localStorage
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            if (currentUser.name) {
+                userNameElement.textContent = currentUser.name;
+            } else if (currentUser.username) {
+                // If name not available, use username with proper formatting
+                const formattedName = currentUser.username
+                    .split('.')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                userNameElement.textContent = formattedName;
+            } else {
+                // Fallback to default
+                userNameElement.textContent = 'Applicant';
+            }
+        });
+
+        // Job filtering functionality
+        function filterJobs() {
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const skillsSearch = document.getElementById('skillsSearch').value.toLowerCase();
+            const jobCards = document.querySelectorAll('.job-card');
+            
+            let visibleCount = 0;
+
+            jobCards.forEach(card => {
+                let isVisible = true;
+
+                // Filter by category
+                if (categoryFilter && card.getAttribute('data-category') !== categoryFilter) {
+                    isVisible = false;
+                }
+
+                // Filter by skills
+                if (skillsSearch) {
+                    const cardSkills = card.getAttribute('data-skills').toLowerCase();
+                    const searchTerms = skillsSearch.split(',').map(term => term.trim());
+                    const hasMatchingSkill = searchTerms.some(term => 
+                        cardSkills.includes(term) || 
+                        card.textContent.toLowerCase().includes(term)
+                    );
+                    
+                    if (!hasMatchingSkill) {
+                        isVisible = false;
+                    }
+                }
+
+                // Show/hide job card
+                if (isVisible) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Show feedback message
+            showJobFilterMessage(visibleCount, jobCards.length);
+        }
+
+        function showJobFilterMessage(visible, total) {
+            // Remove existing message
+            const existingMessage = document.getElementById('jobFilterMessage');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            // Create new message
+            const messageDiv = document.createElement('div');
+            messageDiv.id = 'jobFilterMessage';
+            messageDiv.className = 'bg-blue-50 border border-blue-200 text-blue-800 px-3 py-2 rounded-lg mb-3 text-sm';
+            messageDiv.innerHTML = `<i class="fas fa-info-circle mr-2"></i>Showing ${visible} of ${total} job opportunities`;
+
+            // Insert message before job list
+            const jobList = document.getElementById('jobList');
+            jobList.parentNode.insertBefore(messageDiv, jobList);
+
+            // Remove message after 3 seconds if showing all jobs
+            if (visible === total) {
+                setTimeout(() => {
+                    if (messageDiv && messageDiv.parentNode) {
+                        messageDiv.remove();
+                    }
+                }, 2000);
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('userRole');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+    <script src="js/app.js"></script>
+</body>
+</html>

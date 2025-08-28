@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillMatch AI - Applicant Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Fixed Header -->
+    <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
+        <div class="flex items-center justify-between p-4">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-brain text-2xl text-primary"></i>
+                    <span class="text-xl font-bold text-gray-900">SkillMatch AI</span>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <!-- Dark mode toggle -->
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="theme-toggle" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <i class="fas fa-moon ml-3 text-gray-600"></i>
+                </label>
+
+                <!-- User menu -->
+                <div class="flex items-center space-x-3">
+                    <div class="text-sm">
+                        <span class="text-gray-600">Welcome,</span>
+                        <span class="font-medium text-gray-900" id="user-name">Applicant</span>
+                    </div>
+                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white text-sm"></i>
+                    </div>
+                    <button onclick="logout()" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex pt-16">
+        <!-- Fixed Sidebar -->
+        <aside class="fixed left-0 w-64 h-full bg-white shadow-sm overflow-y-auto">
+            <nav class="sidebar-nav p-4 space-y-2">
+                <button onclick="showSection('dashboard')" class="nav-item active w-full flex items-center space-x-3 p-3 rounded-lg text-left hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span>Dashboard</span>
+                </button>
+                
+                <button onclick="showSection('search-jobs')" class="nav-item w-full flex items-center space-x-3 p-3 rounded-lg text-left hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-search w-5"></i>
+                    <span>Search Job Openings</span>
+                </button>
+                
+                <button onclick="showSection('profile')" class="nav-item w-full flex items-center space-x-3 p-3 rounded-lg text-left hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-user w-5"></i>
+                    <span>Profile</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-1 ml-64 p-6">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+                
+                <!-- Resume Upload Section -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-file-upload text-primary mr-2"></i>Resume Upload
+                    </h2>
+                    <div class="upload-area border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors" id="resumeUpload">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-lg text-gray-600 mb-2">Drop your resume here or click to upload</p>
+                        <p class="text-sm text-gray-500 mb-4">Supports PDF, DOC, DOCX (Max 5MB)</p>
+                        <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" class="hidden">
+                        <button onclick="document.getElementById('resumeFile').click()" 
+                                class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Choose File
+                        </button>
+                    </div>
+                    <div id="uploadedResume" class="hidden mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                                <span class="text-sm font-medium" id="resumeFileName">resume.pdf</span>
+                            </div>
+                            <button onclick="removeResume()" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resume Analysis Results (Hidden by default, shown after upload) -->
+                <div id="resumeAnalysisSection" class="hidden">
+                    <!-- Success Message -->
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                            <div>
+                                <h3 class="text-sm font-medium text-green-800">Resume Processed Successfully!</h3>
+                                <p class="text-sm text-green-700 mt-1">Your resume has been analyzed and your profile has been updated.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Overview Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-blue-100 rounded-full">
+                                    <i class="fas fa-chart-pie text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Skills Matched</p>
+                                    <p class="text-2xl font-bold text-blue-600" id="skillsMatched">8/12</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-green-100 rounded-full">
+                                    <i class="fas fa-briefcase text-green-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Job Matches</p>
+                                    <p class="text-2xl font-bold text-green-600" id="jobMatches">15</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-yellow-100 rounded-full">
+                                    <i class="fas fa-percentage text-yellow-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Match Score</p>
+                                    <p class="text-2xl font-bold text-yellow-600" id="overallMatch">87%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skill Analysis Chart -->
+                    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Skill Analysis</h3>
+                        <div class="flex flex-col lg:flex-row gap-8">
+                            <!-- Chart Container -->
+                            <div class="flex-1">
+                                <div class="h-64 flex items-center justify-center">
+                                    <canvas id="skillAnalysisChart" width="300" height="200"></canvas>
+                                </div>
+                            </div>
+                            
+                            <!-- Skills Legend -->
+                            <div class="lg:w-64">
+                                <h4 class="font-medium text-gray-900 mb-3">Top Skills</h4>
+                                <div class="space-y-2" id="skillsLegend">
+                                    <!-- Skills will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Job Matches -->
+                    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Top Job Matches</h3>
+                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                View All Matches →
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4" id="topJobMatches">
+                            <!-- Job matches will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Skill Gaps Analysis -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Skill Gaps to Address</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="skillGaps">
+                            <!-- Skill gaps will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Jobs Section -->
+            <div id="search-jobs-section" class="content-section hidden">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Search Job Openings</h1>
+                
+                <!-- Search Filters -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Find Your Perfect Job</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                            <input type="text" id="searchTitle" placeholder="e.g., Frontend Developer" 
+                                   class="w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Skills</label>
+                            <input type="text" id="searchSkills" placeholder="e.g., React, JavaScript" 
+                                   class="w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Keywords</label>
+                            <input type="text" id="searchKeywords" placeholder="e.g., Remote, Senior" 
+                                   class="w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                    </div>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <button onclick="clearJobSearch()" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Clear
+                        </button>
+                        <button onclick="searchJobs()" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-search mr-2"></i>Search Jobs
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Job Openings -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Recent Job Openings</h3>
+                        <span class="text-sm text-gray-600" id="jobCount">15 jobs found</span>
+                    </div>
+                    <div id="jobSearchResults" class="space-y-4">
+                        <!-- Job search results will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="content-section hidden">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">My Profile</h1>
+                
+                <div id="emptyProfile" class="bg-white rounded-lg shadow-sm p-8 text-center">
+                    <div class="max-w-md mx-auto">
+                        <i class="fas fa-user-circle text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Profile Not Complete</h3>
+                        <p class="text-gray-600 mb-4">Upload your resume in the Dashboard to automatically populate your profile with parsed information.</p>
+                        <button onclick="showSection('dashboard')" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-upload mr-2"></i>Upload Resume
+                        </button>
+                    </div>
+                </div>
+
+                <div id="populatedProfile" class="hidden space-y-6">
+                    <!-- Basic Information -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                                <p class="mt-1 text-sm text-gray-900" id="profileName">-</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Email</label>
+                                <p class="mt-1 text-sm text-gray-900" id="profileEmail">-</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Phone</label>
+                                <p class="mt-1 text-sm text-gray-900" id="profilePhone">-</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Location</label>
+                                <p class="mt-1 text-sm text-gray-900" id="profileLocation">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Education -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Education</h3>
+                        <div id="educationList" class="space-y-3">
+                            <!-- Education entries will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Experience -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Work Experience</h3>
+                        <div id="experienceList" class="space-y-4">
+                            <!-- Experience entries will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Skills</h3>
+                        <div id="skillsList" class="flex flex-wrap gap-2">
+                            <!-- Skills will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Job Details Modal -->
+    <div id="jobModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="text-xl font-semibold">Job Details</h2>
+                <button onclick="closeJobModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="jobModalContent">
+                <!-- Job details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+</body>
+</html>
