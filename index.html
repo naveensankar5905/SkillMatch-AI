@@ -4,9 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkillMatch AI - Match Your Skills to the Right Job</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="css/critical.css" as="style">
+    <link rel="preload" href="css/styles.css" as="style">
+    <link rel="preload" href="js/app.js" as="script">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Load critical CSS immediately -->
+    <link rel="stylesheet" href="css/critical.css">
+    
+    <!-- Load non-critical CSS asynchronously -->
+    <link rel="preload" href="css/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="css/styles.css"></noscript>
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"></noscript>
+    
+    <!-- Load TailwindCSS asynchronously -->
+    <script>
+        // Load Tailwind CSS asynchronously
+        const tailwindScript = document.createElement('script');
+        tailwindScript.src = 'https://cdn.tailwindcss.com';
+        tailwindScript.async = true;
+        document.head.appendChild(tailwindScript);
+    </script>
+    
+    <!-- Load core JS immediately for theme and basic functionality -->
+    <script src="js/core.js"></script>
+    
+    <!-- Performance monitoring -->
+    <script src="js/performance.js" async></script>
     <script>
         tailwind.config = {
             theme: {
@@ -148,6 +177,30 @@
         </div>
     </footer>
 
-    <script src="js/app.js"></script>
+    <!-- Load JavaScript asynchronously -->
+    <script>
+        // Register Service Worker for caching
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registered successfully');
+                    })
+                    .catch(function(error) {
+                        console.log('ServiceWorker registration failed');
+                    });
+            });
+        }
+
+        // Load app.js after page load
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const script = document.createElement('script');
+                script.src = 'js/app.js';
+                script.async = true;
+                document.body.appendChild(script);
+            }, 100);
+        });
+    </script>
 </body>
 </html>
